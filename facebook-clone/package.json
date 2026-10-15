@@ -1,0 +1,82 @@
+{
+  "name": "facebook-ui-clone",
+  "version": "0.1.0",
+  "description": "A pixel-perfect Facebook UI clone built with React 18, TypeScript, Vite, and Tailwind CSS. Includes Newsfeed, Marketplace, Groups, Gaming, Stories, Reels, and more.",
+  "author": "saifulshihab <saifulshihab29@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/saifulshihab/facebook-clone",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saifulshihab/facebook-clone.git"
+  },
+  "bugs": {
+    "url": "https://github.com/saifulshihab/facebook-clone/issues"
+  },
+  "private": false,
+  "type": "module",
+  "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "clsx": "^2.1.0",
+    "formik": "^2.2.9",
+    "moment": "^2.29.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-icons": "^3.11.0",
+    "react-router-dom": "^6.4.3",
+    "react-tooltip": "^5.26.3",
+    "tailwind-merge": "^2.2.1",
+    "tailwind-scrollbar": "^3.1.0",
+    "yup": "^0.32.11"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "format": "prettier --ignore-path .gitignore --write \"**/*.+(js|ts|jsx|tsx|json)\""
+  },
+  "keywords": [
+    "facebook-clone",
+    "facebook-ui",
+    "react",
+    "react18",
+    "typescript",
+    "vite",
+    "tailwindcss",
+    "social-media-clone",
+    "social-network",
+    "frontend",
+    "ui-clone",
+    "newsfeed",
+    "marketplace",
+    "groups",
+    "gaming",
+    "stories",
+    "reels",
+    "headlessui",
+    "react-router"
+  ],
+  "devDependencies": {
+    "@types/react": "^18.0.25",
+    "@types/react-dom": "^18.0.9",
+    "@types/react-router-dom": "^5.3.2",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.38.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.30.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.3.4",
+    "postcss": "^8.4.31",
+    "prettier": "^3.3.0",
+    "prettier-plugin-tailwindcss": "^0.8.0",
+    "tailwindcss": "^3.3.3",
+    "typescript": "^5.0.2",
+    "vite": "^4.3.2"
+  }
+}

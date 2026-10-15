@@ -1,0 +1,31 @@
+import React from 'react';
+import Post from '.';
+import { postsData } from '../../../lib/data';
+import { TPostView } from '../../../types/post';
+import { cn } from '../../../utils';
+
+interface IProps {
+  postsView?: TPostView;
+}
+
+const PostContainer: React.FC<IProps> = (props) => {
+  const { postsView } = props;
+  return (
+    <div className="mt-4 h-full w-full">
+      <div
+        className={cn(
+          'grid gap-2',
+          postsView === 'gridView' ? 'grid-cols-2' : 'grid-cols-1',
+        )}
+      >
+        {postsData.length ? (
+          postsData.map((post, idx) => <Post key={idx} post={post} />)
+        ) : (
+          <p>No posts yet!</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default PostContainer;

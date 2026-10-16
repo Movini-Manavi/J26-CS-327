@@ -1,7 +1,7 @@
 # Component 1: implementation plan (grooming detection in the Facebook clone)
 
 Companion to [grooming_platform_project_context.md](grooming_platform_project_context.md).
-Status as of 2026-10-15: **Phase 1 (UI) done, running on a mock backend.** Phases 2+ wait for your go-ahead.
+Status as of 2026-10-16: **Phase 1 (UI) and Phase 2 (backend skeleton, stub classifier) done.** Phase 3+ wait for your go-ahead. Local run steps: [grooming-backend/README.md](grooming-backend/README.md).
 
 ## Phase 1: Frontend UI (done)
 
@@ -39,7 +39,7 @@ facebook-clone/
 
 Switching to the real backend later is a config change: set `VITE_API_MODE=http` and `VITE_API_URL`.
 
-## Phase 2: Backend skeleton, no model (needs your go-ahead)
+## Phase 2: Backend skeleton, no model (done)
 
 `grooming-backend/` with FastAPI, matching the context doc:
 

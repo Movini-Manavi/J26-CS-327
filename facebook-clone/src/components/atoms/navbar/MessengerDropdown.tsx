@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { chatsData } from '../../../lib/data';
 import { IChat } from '../../../types/chat';
 
@@ -7,9 +8,12 @@ const META_AI_GRADIENT =
 
 const tabs = ['All', 'Unread', 'Groups', 'Communities'];
 
-function ChatItem({ chat }: { chat: IChat }) {
+function ChatItem({ chat, onOpen }: { chat: IChat; onOpen: () => void }) {
   return (
-    <button className="flex w-full items-center gap-3 rounded-lg px-2 py-2 hover:bg-[#3A3B3C] focus:outline-none">
+    <button
+      onClick={onOpen}
+      className="flex w-full items-center gap-3 rounded-lg px-2 py-2 hover:bg-[#3A3B3C] focus:outline-none"
+    >
       {/* Avatar */}
       <div className="relative flex-shrink-0">
         {chat.user.isMetaAI ? (
@@ -85,6 +89,7 @@ function ChatItem({ chat }: { chat: IChat }) {
 
 const MessengerDropdown: React.FC = () => {
   const [activeTab, setActiveTab] = useState('All');
+  const navigate = useNavigate();
 
   return (
     <div className="absolute right-0 top-12 w-[360px] rounded-2xl bg-[#242526] shadow-2xl shadow-black/60">
@@ -135,13 +140,20 @@ const MessengerDropdown: React.FC = () => {
       {/* Chat list */}
       <div className="overflow-y-auto px-2" style={{ maxHeight: '80vh' }}>
         {chatsData.map((chat) => (
-          <ChatItem key={chat._id} chat={chat} />
+          <ChatItem
+            key={chat._id}
+            chat={chat}
+            onOpen={() => navigate('/chat')}
+          />
         ))}
       </div>
 
       {/* Footer */}
       <div className="border-t border-[#3A3B3C] px-4 py-3 text-center">
-        <button className="text-[15px] font-semibold text-[#0866FF] hover:underline focus:outline-none">
+        <button
+          onClick={() => navigate('/chat')}
+          className="text-[15px] font-semibold text-[#0866FF] hover:underline focus:outline-none"
+        >
           See all in Messenger
         </button>
       </div>

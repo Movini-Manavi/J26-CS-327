@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import ChatLayout from '../components/layouts/ChatLayout';
 import GamingPageLayout from '../components/layouts/GamingPageLayout';
 import GroupPageLayout from '../components/layouts/GroupPageLayout';
 import MarketplacePageLayout from '../components/layouts/MarketplacePageLayout';
@@ -7,7 +8,10 @@ import NewsFeedLayout from '../components/layouts/NewsFeedLayout';
 import ProfilePageLayout from '../components/layouts/ProfilePageLayout';
 import ReelPageLayout from '../components/layouts/ReelPageLayout';
 import StoriesLayout from '../components/layouts/StoriesLayout';
+import ChatPage from '../pages/chat';
+import ChatAdminPage from '../pages/chatadmin';
 import GamingPage from '../pages/gaming';
+import GuardianPage from '../pages/guardian';
 import GroupPage from '../pages/group';
 import LoginPage from '../pages/login';
 import MarketplacePage from '../pages/marketplace';
@@ -19,8 +23,11 @@ import ReelPage from '../pages/reel';
 import StoriesPage from '../pages/stories';
 import { PrivateRoute } from './PrivateRoute';
 import {
+  CHAT,
+  CHAT_ADMIN,
   GAMING,
   GROUP,
+  GUARDIAN,
   HOME,
   LOGIN,
   MARKETPLACE,
@@ -98,6 +105,19 @@ const Routers: React.FC = () => {
           </PrivateRoute>
         }
       />
+
+      <Route
+        path={CHAT}
+        element={
+          <PrivateRoute layout={ChatLayout}>
+            <ChatPage />
+          </PrivateRoute>
+        }
+      />
+
+      {/* Grooming-detection demo: sender simulator and guardian view */}
+      <Route path={CHAT_ADMIN} element={<ChatAdminPage />} />
+      <Route path={GUARDIAN} element={<GuardianPage />} />
 
       <Route path="*" element={<PageNotFound />} />
     </Routes>

@@ -7,3 +7,7 @@ export const GROUP = '/group';
 export const GAMING = '/gaming';
 export const PROFILE = '/profile';
 export const STORIES = '/stories/:id';
+export const CHAT = '/chat';
+export const CHAT_THREAD = '/chat/:contactId';
+export const CHAT_ADMIN = '/chatadmin';
+export const GUARDIAN = '/guardian';

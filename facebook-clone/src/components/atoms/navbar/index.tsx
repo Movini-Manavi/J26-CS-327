@@ -185,7 +185,9 @@ const Navbar: React.FC = () => {
           >
             <i className="fab fa-facebook-messenger"></i>
           </button>
-          {showMessenger && <MessengerDropdown />}
+          {showMessenger && (
+            <MessengerDropdown onClose={() => setShowMessenger(false)} />
+          )}
         </div>
         <button className="h-10 w-10 rounded-full bg-gray-200 hover:bg-neutral-600 focus:outline-none dark:bg-neutral-700 dark:text-gray-200">
           <i className="fas fa-bell"></i>

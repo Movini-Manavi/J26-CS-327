@@ -25,6 +25,7 @@ import { PrivateRoute } from './PrivateRoute';
 import {
   CHAT,
   CHAT_ADMIN,
+  CHAT_THREAD,
   GAMING,
   GROUP,
   GUARDIAN,
@@ -108,6 +109,15 @@ const Routers: React.FC = () => {
 
       <Route
         path={CHAT}
+        element={
+          <PrivateRoute layout={ChatLayout}>
+            <ChatPage />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path={CHAT_THREAD}
         element={
           <PrivateRoute layout={ChatLayout}>
             <ChatPage />

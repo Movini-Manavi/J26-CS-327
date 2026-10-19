@@ -19,6 +19,7 @@ def settings(tmp_path) -> Settings:
         _env_file=None,
         sqlite_path=str(tmp_path / "test.db"),
         demo_key=DEMO_KEY,
+        classifier="stub",
         cors_origins=["http://localhost:3000"],
     )
 

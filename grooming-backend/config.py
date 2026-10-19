@@ -17,6 +17,15 @@ STAGE_LEVEL = {
     "Solicitation": "critical",
 }
 
+# Push notification text for guardians. Keep in sync with guardianMessage in
+# facebook-clone/src/lib/grooming/stages.ts.
+GUARDIAN_MESSAGES = {
+    "Trust-Building": "Early warning sign: a message to your child tries to build a fast bond. Open the guardian page.",
+    "Isolation": "Warning sign: a message asks your child to keep secrets or chat privately. Open the guardian page.",
+    "Desensitization": "Serious warning sign: a message steers your child toward inappropriate topics. Open the guardian page.",
+    "Solicitation": "Urgent: a message asks your child for photos, details or a meeting. Check in with your child now.",
+}
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=BASE_DIR / ".env", extra="ignore")
@@ -29,8 +38,10 @@ class Settings(BaseSettings):
     # Any localhost port is allowed for local dev; set empty in production.
     cors_origin_regex: str = r"^http://(localhost|127\.0\.0\.1)(:\d+)?$"
 
-    classifier: Literal["stub"] = "stub"
-    model_dir: str = "./models/roberta-base"
+    # transformers = the fine-tuned model in MODEL_DIR; stub = keyword list (tests)
+    classifier: Literal["transformers", "stub"] = "transformers"
+    model_dir: str = "./best_model"
+    max_length: int = 128
 
     alert_stages: Annotated[list[str], NoDecode] = STAGES[1:]
 

@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import AlertToastStack, {
   IToast,
 } from '../../components/organisms/grooming/AlertToast';
@@ -7,17 +8,19 @@ import ChatThread from '../../components/organisms/grooming/ChatThread';
 import ConversationList from '../../components/organisms/grooming/ConversationList';
 import { useGroomingData } from '../../lib/grooming/useGroomingData';
 import { ServerEvent } from '../../types/grooming';
+import { CHAT } from '../../routes/routes';
 import { cn } from '../../utils';
 
 const ChatPage: React.FC = () => {
-  const [selectedContactId, setSelectedContactId] = useState<string | null>(
-    null,
-  );
+  // The open chat lives in the URL (/chat/:contactId) so other pages can link to it.
+  const { contactId } = useParams();
+  const navigate = useNavigate();
+  const selectedContactId = contactId ?? null;
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     null,
   );
   const [showAnalysis, setShowAnalysis] = useState(true);
-  const [mobileThreadOpen, setMobileThreadOpen] = useState(false);
+  const [mobileThreadOpen, setMobileThreadOpen] = useState(!!contactId);
   const [toasts, setToasts] = useState<IToast[]>([]);
   const [sendError, setSendError] = useState<string | null>(null);
 
@@ -44,12 +47,17 @@ const ChatPage: React.FC = () => {
     document.title = 'Messenger | Facebook Clone';
   }, []);
 
-  // Default to the most recent conversation.
+  // With no chat in the URL (or an unknown one), open the most recent one.
   useEffect(() => {
-    if (selectedContactId || contacts.length === 0) return;
+    if (loading || contacts.length === 0) return;
+    if (selectedContactId && contacts.some((c) => c.id === selectedContactId)) {
+      return;
+    }
     const latest = [...messages].sort((a, b) => b.seq - a.seq)[0];
-    setSelectedContactId(latest?.contact_id ?? contacts[0].id);
-  }, [contacts, messages, selectedContactId]);
+    navigate(`${CHAT}/${latest?.contact_id ?? contacts[0].id}`, {
+      replace: true,
+    });
+  }, [loading, contacts, messages, selectedContactId, navigate]);
 
   const contact = contacts.find((c) => c.id === selectedContactId) ?? null;
   const thread = useMemo(
@@ -68,7 +76,7 @@ const ChatPage: React.FC = () => {
   }, []);
 
   const selectContact = (id: string) => {
-    setSelectedContactId(id);
+    navigate(`${CHAT}/${id}`);
     setSelectedMessageId(null);
     setMobileThreadOpen(true);
   };
@@ -90,7 +98,7 @@ const ChatPage: React.FC = () => {
         toasts={namedToasts}
         onClose={closeToast}
         onView={(t) => {
-          setSelectedContactId(t.alert.contact_id);
+          navigate(`${CHAT}/${t.alert.contact_id}`);
           setSelectedMessageId(t.alert.message_id);
           setMobileThreadOpen(true);
           closeToast(t.alert.id);

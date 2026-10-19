@@ -64,3 +64,13 @@
     transform: translateY(0);
   }
 }
+
+/* Grooming-detection demo: countdown bar until the popup hides */
+@keyframes toast-timer {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}

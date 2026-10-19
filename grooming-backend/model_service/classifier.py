@@ -1,7 +1,7 @@
 """Message classifier behind one small interface so the model is swappable.
 
-Phase 2 ships StubClassifier (a keyword lexicon). Phase 3 adds a
-TransformersClassifier that loads MODEL_DIR on CPU, selected by CLASSIFIER.
+CLASSIFIER=transformers loads the fine-tuned model from MODEL_DIR (default).
+CLASSIFIER=stub uses a keyword lexicon; the tests use it so they stay fast.
 """
 
 import re
@@ -74,8 +74,8 @@ class StubClassifier(Classifier):
 def get_classifier(settings: Settings) -> Classifier:
     if settings.classifier == "stub":
         return StubClassifier()
-    # Phase 3:
-    # if settings.classifier == "transformers":
-    #     from model_service.transformers_classifier import TransformersClassifier
-    #     return TransformersClassifier(settings.model_dir)
+    if settings.classifier == "transformers":
+        from model_service.transformers_classifier import TransformersClassifier
+
+        return TransformersClassifier(settings.model_dir, settings.max_length)
     raise ValueError(f"Unknown CLASSIFIER: {settings.classifier}")

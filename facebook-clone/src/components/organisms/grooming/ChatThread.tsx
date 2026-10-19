@@ -2,7 +2,7 @@ import moment from 'moment';
 import React, { useEffect, useRef, useState } from 'react';
 import { IContact, IMessageWithAnalysis } from '../../../types/grooming';
 import { cn } from '../../../utils';
-import { Avatar, StageBadge } from './common';
+import { Avatar } from './common';
 
 interface IProps {
   contact: IContact;
@@ -116,8 +116,6 @@ const ChatThread: React.FC<IProps> = ({
             !prev ||
             moment(m.created_at).diff(moment(prev.created_at), 'minutes') > 20;
           const incoming = m.direction === 'incoming';
-          const stage = m.analysis?.label;
-          const flagged = incoming && stage && stage !== 'none';
           const selected = m.id === selectedMessageId;
           return (
             <div
@@ -154,8 +152,6 @@ const ChatThread: React.FC<IProps> = ({
                       incoming
                         ? 'bg-gray-100 text-gray-900 dark:bg-[#3A3B3C] dark:text-gray-100'
                         : 'cursor-default bg-[#0866FF] text-white',
-                      flagged &&
-                        'ring-2 ring-red-400/80 ring-offset-1 ring-offset-white dark:ring-red-500/70 dark:ring-offset-[#242526]',
                       selected && 'outline outline-2 outline-[#0866FF]/60',
                     )}
                   >
@@ -166,9 +162,6 @@ const ChatThread: React.FC<IProps> = ({
                       <i className="fas fa-circle-notch fa-spin mr-1" />
                       analysing…
                     </span>
-                  )}
-                  {flagged && stage && (
-                    <StageBadge stage={stage} className="mt-1" />
                   )}
                 </div>
               </div>

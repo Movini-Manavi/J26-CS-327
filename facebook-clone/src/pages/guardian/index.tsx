@@ -61,8 +61,8 @@ const GuardianPage: React.FC = () => {
         // With the real backend, Web Push handles this via the service worker.
         if (API_MODE === 'mock' && event.type === 'message' && event.alert) {
           showLocalNotification(
-            `${STAGE_META[event.alert.stage].label} alert`,
-            event.message.body,
+            'Guardian alert',
+            STAGE_META[event.alert.stage].guardianMessage,
           );
         }
       }, []),
@@ -327,7 +327,10 @@ const GuardianPage: React.FC = () => {
                           <span className="h-2 w-2 rounded-full bg-red-500" />
                         )}
                       </div>
-                      <p className="mt-1 text-[14px] text-gray-800 dark:text-gray-200">
+                      <p className="mt-1 text-[14px] font-medium text-gray-900 dark:text-white">
+                        {STAGE_META[a.stage].guardianMessage}
+                      </p>
+                      <p className="mt-1 text-[13px] italic text-gray-600 dark:text-gray-300">
                         “{msg?.body ?? 'Message not loaded'}”
                       </p>
                       <p className="mt-1 text-[12px] text-gray-500 dark:text-gray-400">

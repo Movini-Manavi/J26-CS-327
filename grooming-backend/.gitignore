@@ -5,5 +5,4 @@ __pycache__/
 .env
 data/
 # Model weights (~500 MB) are never committed
-models/*
-!models/.gitkeep
+best_model/

@@ -12,8 +12,10 @@ from model_service.tracker import StageTracker
         ("HELLO", "hello"),
         ("sooooo cool", "soo cool"),
         ("s e c r e t", "secret"),
-        ("d0nt t3ll", "don't tell"),
-        ("u r gr8", "you are gr8"),
+        ("d0nt t3ll", "dont tell"),
+        ("u r gr8", "you are great"),
+        ("s3nd me ur pix pls", "send me your pic please"),
+        ("i am 13yo", "i am 13yo"),  # ages are protected
     ],
 )
 def test_normalize(raw, expected):
@@ -53,3 +55,18 @@ def test_tracker_rule_is_configurable():
     t = StageTracker(["Isolation", "Desensitization", "Solicitation"])
     assert t.update("c1", "Trust-Building").alert is False
     assert t.update("c1", "Solicitation").alert is True
+
+
+def test_guardian_push_payload_uses_guardian_messages():
+    from config import GUARDIAN_MESSAGES
+    from push import alert_payload
+    from schemas import Alert, Contact
+
+    contact = Contact(id="c", name="Jay", dob="1990-01-01", phone="+94 71 000 0000", created_at="x")
+    alert = Alert(
+        id="a", contact_id="c", message_id="m", stage="Solicitation", level="critical", created_at="x"
+    )
+    p = alert_payload(alert, contact)
+    assert p["title"] == "Guardian alert: Jay"
+    assert p["body"] == GUARDIAN_MESSAGES["Solicitation"]
+    assert set(GUARDIAN_MESSAGES) == set(STAGES[1:])

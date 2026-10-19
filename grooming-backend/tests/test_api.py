@@ -10,7 +10,7 @@ def send_in(client, key, contact_id, body):
 def test_health(client):
     body = client.get("/health").json()
     assert body["status"] == "ok"
-    assert body["classifier"] == "stub-lexicon"
+    assert body["classifier"] == "stub-lexicon"  # tests use the stub; the app defaults to the model
     assert body["push_enabled"] is False
 
 
@@ -44,7 +44,7 @@ def test_incoming_is_analysed_and_alerts(client, key, contact):
     msg, alert = body["message"], body["alert"]
     assert msg["direction"] == "incoming" and msg["seq"] == 1
     assert msg["analysis"]["label"] == "Isolation"
-    assert msg["analysis"]["normalized_text"] == "don't tell your parents we talk"
+    assert msg["analysis"]["normalized_text"] == "dont tell your parents we talk"
     assert alert["stage"] == "Isolation" and alert["level"] == "medium"
     assert alert["message_id"] == msg["id"] and alert["acknowledged"] is False
 

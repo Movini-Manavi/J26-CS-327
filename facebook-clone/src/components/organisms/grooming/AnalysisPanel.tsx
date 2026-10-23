@@ -18,7 +18,7 @@ interface IProps {
   connection: ConnectionState;
 }
 
-/** Right-hand panel: contact details, per-message analysis and stage timeline. */
+/** Contact details, per-message analysis and stage timeline (shown in /chatadmin). */
 const AnalysisPanel: React.FC<IProps> = ({
   contact,
   messages,
@@ -36,7 +36,7 @@ const AnalysisPanel: React.FC<IProps> = ({
   const age = ageFromDob(contact.dob);
 
   return (
-    <aside className="fb-scrollbar hidden h-full w-[320px] flex-shrink-0 overflow-y-auto border-l border-gray-200 bg-white px-4 py-4 lg:block dark:border-neutral-700 dark:bg-[#242526]">
+    <aside className="fb-scrollbar rounded-2xl bg-white px-4 py-4 shadow-sm dark:bg-[#242526]">
       <div className="flex flex-col items-center text-center">
         <Avatar name={contact.name} size="lg" />
         <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">

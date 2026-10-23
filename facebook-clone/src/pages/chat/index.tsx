@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AlertToastStack, {
   IToast,
 } from '../../components/organisms/grooming/AlertToast';
-import AnalysisPanel from '../../components/organisms/grooming/AnalysisPanel';
 import ChatThread from '../../components/organisms/grooming/ChatThread';
 import ConversationList from '../../components/organisms/grooming/ConversationList';
 import { useGroomingData } from '../../lib/grooming/useGroomingData';
@@ -19,7 +18,6 @@ const ChatPage: React.FC = () => {
   const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
     null,
   );
-  const [showAnalysis, setShowAnalysis] = useState(true);
   const [mobileThreadOpen, setMobileThreadOpen] = useState(!!contactId);
   const [toasts, setToasts] = useState<IToast[]>([]);
   const [sendError, setSendError] = useState<string | null>(null);
@@ -40,7 +38,7 @@ const ChatPage: React.FC = () => {
     }
   }, []);
 
-  const { contacts, messages, alerts, connection, loading, error, api } =
+  const { contacts, messages, alerts, loading, error, api } =
     useGroomingData(handleEvent);
 
   useEffect(() => {
@@ -148,22 +146,10 @@ const ChatPage: React.FC = () => {
                 contact={contact}
                 messages={thread}
                 selectedMessageId={selectedMessageId}
-                onSelectMessage={setSelectedMessageId}
                 onSend={send}
-                showAnalysis={showAnalysis}
-                onToggleAnalysis={() => setShowAnalysis((v) => !v)}
                 onBack={() => setMobileThreadOpen(false)}
               />
             </div>
-            {showAnalysis && (
-              <AnalysisPanel
-                contact={contact}
-                messages={thread}
-                selectedMessageId={selectedMessageId}
-                onSelectMessage={setSelectedMessageId}
-                connection={connection}
-              />
-            )}
           </>
         ) : (
           <div className="flex flex-1 items-center justify-center text-gray-500 dark:text-gray-400">

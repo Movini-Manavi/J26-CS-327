@@ -2,6 +2,7 @@ import { useFormik } from 'formik';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import * as Yup from 'yup';
+import AnalysisPanel from '../../components/organisms/grooming/AnalysisPanel';
 import {
   Avatar,
   ConnectionBadge,
@@ -120,6 +121,9 @@ const ChatAdminPage: React.FC = () => {
     }
   });
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedMessageId, setSelectedMessageId] = useState<string | null>(
+    null,
+  );
   const [draft, setDraft] = useState('');
   const [sending, setSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -257,7 +261,7 @@ const ChatAdminPage: React.FC = () => {
         </p>
       )}
 
-      <main className="mx-auto grid max-w-6xl gap-4 p-4 lg:grid-cols-[340px,1fr]">
+      <main className="mx-auto grid max-w-[1500px] gap-4 p-4 lg:grid-cols-[340px,1fr] xl:grid-cols-[340px,1fr,320px]">
         {/* Left column: contacts */}
         <div className="space-y-4">
           <form
@@ -336,7 +340,10 @@ const ChatAdminPage: React.FC = () => {
               return (
                 <button
                   key={c.id}
-                  onClick={() => setSelectedId(c.id)}
+                  onClick={() => {
+                    setSelectedId(c.id);
+                    setSelectedMessageId(null);
+                  }}
                   className={cn(
                     'flex w-full items-center gap-3 rounded-lg p-2 text-left',
                     c.id === selectedId
@@ -402,16 +409,22 @@ const ChatAdminPage: React.FC = () => {
                         mine ? 'items-end' : 'items-start',
                       )}
                     >
-                      <div
+                      <button
+                        type="button"
+                        disabled={!mine}
+                        onClick={() => setSelectedMessageId(m.id)}
+                        title={mine ? 'Show analysis' : undefined}
                         className={cn(
-                          'max-w-[75%] whitespace-pre-wrap break-words rounded-[18px] px-3 py-2 text-[14px]',
+                          'max-w-[75%] whitespace-pre-wrap break-words rounded-[18px] px-3 py-2 text-left text-[14px]',
                           mine
                             ? 'bg-[#0866FF] text-white'
-                            : 'bg-gray-100 text-gray-900 dark:bg-[#3A3B3C] dark:text-gray-100',
+                            : 'cursor-default bg-gray-100 text-gray-900 dark:bg-[#3A3B3C] dark:text-gray-100',
+                          m.id === selectedMessageId &&
+                            'outline outline-2 outline-offset-2 outline-[#0866FF]/60',
                         )}
                       >
                         {m.body}
-                      </div>
+                      </button>
                       <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-gray-400">
                         {!mine && <span>{DEMO_USER.name} ·</span>}
                         <span>{shortTime(m.created_at)}</span>
@@ -483,6 +496,19 @@ const ChatAdminPage: React.FC = () => {
             </>
           )}
         </section>
+
+        {/* Third column: analysis of the selected message (latest by default) */}
+        {selected && (
+          <div className="lg:col-span-2 xl:col-span-1">
+            <AnalysisPanel
+              contact={selected}
+              messages={thread}
+              selectedMessageId={selectedMessageId}
+              onSelectMessage={setSelectedMessageId}
+              connection={connection}
+            />
+          </div>
+        )}
       </main>
 
       <PrototypeNotice className="mx-auto max-w-6xl px-4 pb-6" />

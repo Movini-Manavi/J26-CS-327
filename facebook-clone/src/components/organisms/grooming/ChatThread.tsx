@@ -7,11 +7,9 @@ import { Avatar } from './common';
 interface IProps {
   contact: IContact;
   messages: IMessageWithAnalysis[];
+  /** Message to scroll to and outline (e.g. from the alert popup). */
   selectedMessageId: string | null;
-  onSelectMessage: (id: string) => void;
   onSend: (body: string) => Promise<void>;
-  showAnalysis: boolean;
-  onToggleAnalysis: () => void;
   onBack: () => void;
 }
 
@@ -19,10 +17,7 @@ const ChatThread: React.FC<IProps> = ({
   contact,
   messages,
   selectedMessageId,
-  onSelectMessage,
   onSend,
-  showAnalysis,
-  onToggleAnalysis,
   onBack,
 }) => {
   const [draft, setDraft] = useState('');
@@ -85,16 +80,6 @@ const ChatThread: React.FC<IProps> = ({
           <button className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-[#3A3B3C]">
             <i className="fas fa-video" />
           </button>
-          <button
-            onClick={onToggleAnalysis}
-            title="Toggle safety analysis panel"
-            className={cn(
-              'flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 dark:hover:bg-[#3A3B3C]',
-              showAnalysis && 'bg-[#EBF5FF] dark:bg-[#2D88FF]/20',
-            )}
-          >
-            <i className="fas fa-info-circle" />
-          </button>
         </div>
       </header>
 
@@ -142,21 +127,17 @@ const ChatThread: React.FC<IProps> = ({
                     incoming ? 'items-start' : 'items-end',
                   )}
                 >
-                  <button
-                    type="button"
-                    disabled={!incoming}
-                    onClick={() => onSelectMessage(m.id)}
-                    title={incoming ? 'Show analysis' : undefined}
+                  <div
                     className={cn(
                       'whitespace-pre-wrap break-words rounded-[18px] px-3 py-2 text-left text-[15px] leading-snug',
                       incoming
                         ? 'bg-gray-100 text-gray-900 dark:bg-[#3A3B3C] dark:text-gray-100'
-                        : 'cursor-default bg-[#0866FF] text-white',
+                        : 'bg-[#0866FF] text-white',
                       selected && 'outline outline-2 outline-[#0866FF]/60',
                     )}
                   >
                     {m.body}
-                  </button>
+                  </div>
                   {incoming && !m.analysis && (
                     <span className="mt-1 text-[11px] text-gray-400">
                       <i className="fas fa-circle-notch fa-spin mr-1" />

@@ -20,14 +20,18 @@ const bgColors: { key: string; style: React.CSSProperties }[] = [
 
 const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
-  const [postText, setPostText] = useState(''); // ADDED: State to hold the user's text
+  const [postText, setPostText] = useState('');
+  
+  // NEW STATES for the custom alert
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const activeBg = bgColors.find((c) => c.key === selectedKey);
 
-  // ADDED: The function that connects to your Python API
   const handlePostSubmit = async () => {
     if (!postText.trim()) {
-      alert("Please write something before posting.");
+      setAlertMessage("Please write something before posting.");
+      setShowAlert(true);
       return;
     }
 
@@ -41,141 +45,169 @@ const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
       const result = await response.json();
 
       if (result.risk_level === "High") {
-        alert(`🚨 SAFETY ALERT: This post is flagged as ${result.intent}. Parents will be notified.`);
-        // Optional: Do not submit the post if it's high risk
+        // Show the custom red alert instead of browser alert
+        setAlertMessage(`🚨 SAFETY ALERT: This post is flagged as ${result.intent}. Parents will be notified.`);
+        setShowAlert(true);
         return; 
       }
 
-      // If it's safe (Awareness), proceed with normal post submission
-      alert("Post is safe. Intent: " + result.intent);
-      setPostText(''); // Clear the textarea
-      onClose(); // Close the modal
+      // If it's safe
+      setAlertMessage("Post is safe. Intent: " + result.intent);
+      setShowAlert(true);
+      
+      // Close modal after a short delay for safe posts
+      setTimeout(() => {
+        setPostText('');
+        onClose();
+        setShowAlert(false);
+      }, 2000);
 
     } catch (error) {
       console.error("API Error:", error);
-      alert("Could not connect to the Harmful Content Detection API. Is the Python server running?");
+      setAlertMessage("Could not connect to the Harmful Content Detection API.");
+      setShowAlert(true);
     }
   };
 
   return (
-    <Dialog open={isOpen} onClose={onClose} className="relative z-50">
-      {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+    <>
+      <Dialog open={isOpen} onClose={onClose} className="relative z-50">
+        {/* Backdrop */}
+        <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
 
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <DialogPanel className="w-full max-w-lg rounded-xl bg-white shadow-2xl dark:bg-[#242526]">
-          {/* Header */}
-          <div className="relative flex items-center justify-center border-b px-4 py-3 dark:border-neutral-700">
-            <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100">
-              Create post
-            </DialogTitle>
-            <button
-              onClick={onClose}
-              className="absolute right-3 flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500"
-            >
-              <i className="fas fa-times"></i>
-            </button>
-          </div>
-
-          {/* User info */}
-          <div className="flex items-center gap-3 px-4 pt-4">
-            <img
-              src="https://random.imagecdn.app/200/200"
-              className="h-10 w-10 rounded-full"
-              alt="dp"
-            />
-            <div className="flex flex-col">
-              <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-                Saiful Islam Shihab
-              </p>
-              <button className="mt-1 flex items-center gap-1 rounded-md bg-gray-200 px-2 py-0.5 text-xs font-semibold text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500">
-                <i className="fas fa-user-friends text-[10px]"></i>
-                Friends
-                <i className="fas fa-caret-down text-[10px]"></i>
+        <div className="fixed inset-0 flex items-center justify-center p-4">
+          <DialogPanel className="w-full max-w-lg rounded-xl bg-white shadow-2xl dark:bg-[#242526]">
+            {/* Header */}
+            <div className="relative flex items-center justify-center border-b px-4 py-3 dark:border-neutral-700">
+              <DialogTitle className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                Create post
+              </DialogTitle>
+              <button
+                onClick={onClose}
+                className="absolute right-3 flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500"
+              >
+                <i className="fas fa-times"></i>
               </button>
             </div>
-          </div>
 
-          {/* Textarea */}
-          <div
-            className="mx-4 mt-3 rounded-lg p-2 transition-all"
-            style={activeBg?.style}
-          >
-            <textarea
-              rows={4}
-              placeholder="What's on your mind, Saiful?"
-              value={postText} // ADDED: Bind to state
-              onChange={(e) => setPostText(e.target.value)} // ADDED: Update state on typing
-              className={`w-full resize-none bg-transparent text-lg focus:outline-none ${
-                activeBg
-                  ? 'text-center font-bold text-white placeholder:text-white/80'
-                  : 'text-gray-800 placeholder:text-gray-400 dark:text-gray-100 dark:placeholder:text-gray-500'
-              }`}
-            />
-          </div>
+            {/* User info */}
+            <div className="flex items-center gap-3 px-4 pt-4">
+              <img
+                src="https://random.imagecdn.app/200/200"
+                className="h-10 w-10 rounded-full"
+                alt="dp"
+              />
+              <div className="flex flex-col">
+                <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  Saiful Islam Shihab
+                </p>
+                <button className="mt-1 flex items-center gap-1 rounded-md bg-gray-200 px-2 py-0.5 text-xs font-semibold text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500">
+                  <i className="fas fa-user-friends text-[10px]"></i>
+                  Friends
+                  <i className="fas fa-caret-down text-[10px]"></i>
+                </button>
+              </div>
+            </div>
 
-          {/* Background color picker (unchanged) */}
-          <div className="mx-4 mt-2 flex items-center gap-2 overflow-x-auto pb-1">
-            <button className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500">
-              <i className="fas fa-chevron-left text-xs"></i>
-            </button>
-            <button
-              onClick={() => setSelectedKey(null)}
-              className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 bg-white focus:outline-none dark:bg-neutral-700 ${
-                selectedKey === null
-                  ? 'border-primary'
-                  : 'border-gray-300 dark:border-neutral-500'
-              }`}
+            {/* Textarea */}
+            <div
+              className="mx-4 mt-3 rounded-lg p-2 transition-all"
+              style={activeBg?.style}
             >
-              <i className="far fa-clock text-xs text-gray-500 dark:text-gray-400"></i>
-            </button>
-            {bgColors.map((color) => (
-              <button
-                key={color.key}
-                onClick={() => setSelectedKey(color.key)}
-                style={color.style}
-                className={`h-8 w-8 flex-shrink-0 rounded-full border-2 focus:outline-none ${
-                  selectedKey === color.key
-                    ? 'border-primary'
-                    : 'border-transparent'
+              <textarea
+                rows={4}
+                placeholder="What's on your mind, Saiful?"
+                value={postText}
+                onChange={(e) => setPostText(e.target.value)}
+                className={`w-full resize-none bg-transparent text-lg focus:outline-none ${
+                  activeBg
+                    ? 'text-center font-bold text-white placeholder:text-white/80'
+                    : 'text-gray-800 placeholder:text-gray-400 dark:text-gray-100 dark:placeholder:text-gray-500'
                 }`}
               />
-            ))}
-          </div>
-
-          {/* Add to your post (unchanged) */}
-          <div className="mx-4 mt-3 flex items-center justify-between rounded-lg border px-3 py-2 dark:border-neutral-600 sm:px-4">
-            <p className="hidden text-sm font-semibold text-gray-700 dark:text-gray-300 sm:block">
-              Add to your post
-            </p>
-            <div className="flex w-full items-center justify-around sm:w-auto sm:justify-end sm:gap-1">
-              <button title="Photo/Video" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
-                <i className="fas fa-images text-xl text-green-500"></i>
-              </button>
-              <button title="Tag people" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
-                <i className="fas fa-user-tag text-xl text-blue-500"></i>
-              </button>
-              <button title="Feeling/Activity" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
-                <i className="far fa-smile text-xl text-yellow-400"></i>
-              </button>
-              <button title="Check in" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
-                <i className="fas fa-map-marker-alt text-xl text-red-500"></i>
-              </button>
-              <button title="More" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
-                <i className="fas fa-ellipsis-h text-gray-500 dark:text-gray-400"></i>
-              </button>
             </div>
-          </div>
 
-          {/* Post button */}
-          <div className="px-4 py-3">
-            <Button size="large" block onClick={handlePostSubmit}>
-              Post
-            </Button>
+            {/* Background color picker */}
+            <div className="mx-4 mt-2 flex items-center gap-2 overflow-x-auto pb-1">
+              <button className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500">
+                <i className="fas fa-chevron-left text-xs"></i>
+              </button>
+              <button
+                onClick={() => setSelectedKey(null)}
+                className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 bg-white focus:outline-none dark:bg-neutral-700 ${
+                  selectedKey === null
+                    ? 'border-primary'
+                    : 'border-gray-300 dark:border-neutral-500'
+                }`}
+              >
+                <i className="far fa-clock text-xs text-gray-500 dark:text-gray-400"></i>
+              </button>
+              {bgColors.map((color) => (
+                <button
+                  key={color.key}
+                  onClick={() => setSelectedKey(color.key)}
+                  style={color.style}
+                  className={`h-8 w-8 flex-shrink-0 rounded-full border-2 focus:outline-none ${
+                    selectedKey === color.key
+                      ? 'border-primary'
+                      : 'border-transparent'
+                  }`}
+                />
+              ))}
+            </div>
+
+            {/* Add to your post */}
+            <div className="mx-4 mt-3 flex items-center justify-between rounded-lg border px-3 py-2 dark:border-neutral-600 sm:px-4">
+              <p className="hidden text-sm font-semibold text-gray-700 dark:text-gray-300 sm:block">
+                Add to your post
+              </p>
+              <div className="flex w-full items-center justify-around sm:w-auto sm:justify-end sm:gap-1">
+                <button title="Photo/Video" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
+                  <i className="fas fa-images text-xl text-green-500"></i>
+                </button>
+                <button title="Tag people" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
+                  <i className="fas fa-user-tag text-xl text-blue-500"></i>
+                </button>
+                <button title="Feeling/Activity" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
+                  <i className="far fa-smile text-xl text-yellow-400"></i>
+                </button>
+                <button title="Check in" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
+                  <i className="fas fa-map-marker-alt text-xl text-red-500"></i>
+                </button>
+                <button title="More" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
+                  <i className="fas fa-ellipsis-h text-gray-500 dark:text-gray-400"></i>
+                </button>
+              </div>
+            </div>
+
+            {/* Post button */}
+            <div className="px-4 py-3">
+              <Button size="large" block onClick={handlePostSubmit}>
+                Post
+              </Button>
+            </div>
+          </DialogPanel>
+        </div>
+      </Dialog>
+
+      {/* --- CUSTOM RED ALERT MODAL --- */}
+      {showAlert && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4">
+          <div className="w-full max-w-sm rounded-xl bg-white p-6 shadow-2xl dark:bg-[#242526] border-t-8 border-red-600 text-center">
+            <h2 className="text-xl font-bold text-red-600 mb-4">⚠️ SAFETY ALERT</h2>
+            <p className="text-gray-800 dark:text-gray-200 font-medium mb-6">
+              {alertMessage}
+            </p>
+            <button
+              onClick={() => setShowAlert(false)}
+              className="w-full rounded-lg bg-red-600 px-4 py-2 text-white font-bold hover:bg-red-700 transition-colors"
+            >
+              I Understand
+            </button>
           </div>
-        </DialogPanel>
-      </div>
-    </Dialog>
+        </div>
+      )}
+    </>
   );
 };
 

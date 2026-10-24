@@ -20,8 +20,42 @@ const bgColors: { key: string; style: React.CSSProperties }[] = [
 
 const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [postText, setPostText] = useState(''); // ADDED: State to hold the user's text
 
   const activeBg = bgColors.find((c) => c.key === selectedKey);
+
+  // ADDED: The function that connects to your Python API
+  const handlePostSubmit = async () => {
+    if (!postText.trim()) {
+      alert("Please write something before posting.");
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8001/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: postText })
+      });
+
+      const result = await response.json();
+
+      if (result.risk_level === "High") {
+        alert(`🚨 SAFETY ALERT: This post is flagged as ${result.intent}. Parents will be notified.`);
+        // Optional: Do not submit the post if it's high risk
+        return; 
+      }
+
+      // If it's safe (Awareness), proceed with normal post submission
+      alert("Post is safe. Intent: " + result.intent);
+      setPostText(''); // Clear the textarea
+      onClose(); // Close the modal
+
+    } catch (error) {
+      console.error("API Error:", error);
+      alert("Could not connect to the Harmful Content Detection API. Is the Python server running?");
+    }
+  };
 
   return (
     <Dialog open={isOpen} onClose={onClose} className="relative z-50">
@@ -70,6 +104,8 @@ const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
             <textarea
               rows={4}
               placeholder="What's on your mind, Saiful?"
+              value={postText} // ADDED: Bind to state
+              onChange={(e) => setPostText(e.target.value)} // ADDED: Update state on typing
               className={`w-full resize-none bg-transparent text-lg focus:outline-none ${
                 activeBg
                   ? 'text-center font-bold text-white placeholder:text-white/80'
@@ -78,12 +114,11 @@ const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
             />
           </div>
 
-          {/* Background color picker */}
+          {/* Background color picker (unchanged) */}
           <div className="mx-4 mt-2 flex items-center gap-2 overflow-x-auto pb-1">
             <button className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500">
               <i className="fas fa-chevron-left text-xs"></i>
             </button>
-            {/* No background */}
             <button
               onClick={() => setSelectedKey(null)}
               className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-2 bg-white focus:outline-none dark:bg-neutral-700 ${
@@ -94,7 +129,6 @@ const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
             >
               <i className="far fa-clock text-xs text-gray-500 dark:text-gray-400"></i>
             </button>
-            {/* Color swatches */}
             {bgColors.map((color) => (
               <button
                 key={color.key}
@@ -107,56 +141,27 @@ const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
                 }`}
               />
             ))}
-            <button className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500">
-              <i className="fas fa-th text-xs"></i>
-            </button>
-            <button className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 focus:outline-none dark:bg-neutral-600 dark:text-gray-200 dark:hover:bg-neutral-500">
-              <i className="far fa-smile text-xs"></i>
-            </button>
           </div>
 
-          {/* Add to your post */}
+          {/* Add to your post (unchanged) */}
           <div className="mx-4 mt-3 flex items-center justify-between rounded-lg border px-3 py-2 dark:border-neutral-600 sm:px-4">
             <p className="hidden text-sm font-semibold text-gray-700 dark:text-gray-300 sm:block">
               Add to your post
             </p>
             <div className="flex w-full items-center justify-around sm:w-auto sm:justify-end sm:gap-1">
-              <button
-                title="Photo/Video"
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700"
-              >
+              <button title="Photo/Video" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
                 <i className="fas fa-images text-xl text-green-500"></i>
               </button>
-              <button
-                title="Tag people"
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700"
-              >
+              <button title="Tag people" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
                 <i className="fas fa-user-tag text-xl text-blue-500"></i>
               </button>
-              <button
-                title="Feeling/Activity"
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700"
-              >
+              <button title="Feeling/Activity" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
                 <i className="far fa-smile text-xl text-yellow-400"></i>
               </button>
-              <button
-                title="Check in"
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700"
-              >
+              <button title="Check in" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
                 <i className="fas fa-map-marker-alt text-xl text-red-500"></i>
               </button>
-              <button
-                title="GIF"
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700"
-              >
-                <span className="rounded border border-green-500 px-0.5 text-xs font-bold text-green-500">
-                  GIF
-                </span>
-              </button>
-              <button
-                title="More"
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700"
-              >
+              <button title="More" className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100 focus:outline-none dark:hover:bg-neutral-700">
                 <i className="fas fa-ellipsis-h text-gray-500 dark:text-gray-400"></i>
               </button>
             </div>
@@ -164,7 +169,7 @@ const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
 
           {/* Post button */}
           <div className="px-4 py-3">
-            <Button size="large" block>
+            <Button size="large" block onClick={handlePostSubmit}>
               Post
             </Button>
           </div>

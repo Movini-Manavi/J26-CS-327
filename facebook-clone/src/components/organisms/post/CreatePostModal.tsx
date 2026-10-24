@@ -199,9 +199,14 @@ const CreatePostModal: React.FC<IProps> = ({ isOpen, onClose }) => {
             <p className="text-gray-800 dark:text-gray-200 font-medium mb-6">
               {alertMessage}
             </p>
-            <button
-              onClick={() => setShowAlert(false)}
-              className="w-full rounded-lg bg-red-600 px-4 py-2 text-white font-bold hover:bg-red-700 transition-colors"
+                       <button
+              type="button"
+              onClick={() => {
+                  setShowAlert(false);
+                  // If you want to close the whole "Create Post" modal after acknowledging, uncomment the line below:
+                  // onClose(); 
+              }}
+              className="w-full rounded-lg bg-red-600 px-4 py-2 text-white font-bold hover:bg-red-700 transition-colors cursor-pointer z-50 relative"
             >
               I Understand
             </button>
